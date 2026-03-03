@@ -1,0 +1,24 @@
+<% type_classes = {
+  "notice"  => "bg-emerald-500/10 border-emerald-500/30 text-emerald-300",
+  "alert"   => "bg-red-500/10 border-red-500/30 text-red-300",
+  "info"    => "bg-blue-500/10 border-blue-500/30 text-blue-300",
+  "warning" => "bg-amber-500/10 border-amber-500/30 text-amber-300"
+} %>
+
+<% icon = case type.to_s
+  when "notice"  then "✓"
+  when "alert"   then "✕"
+  when "warning" then "⚠"
+  else "ℹ"
+  end
+%>
+
+<div class="flex items-start gap-3 px-4 py-3 rounded-xl border backdrop-blur-sm <%= type_classes[type.to_s] || type_classes["info"] %> animate-slide-in shadow-lg"
+     data-controller="flash"
+     role="alert">
+  <span class="text-sm font-semibold mt-0.5"><%= icon %></span>
+  <span class="text-sm flex-1"><%= message %></span>
+  <button data-action="click->flash#dismiss" class="opacity-70 hover:opacity-100 transition-opacity ml-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+  </button>
+</div>

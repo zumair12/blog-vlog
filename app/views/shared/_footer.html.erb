@@ -1,0 +1,53 @@
+<footer class="bg-gray-950 border-t border-gray-800/50 mt-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+
+      <!-- Brand -->
+      <div class="md:col-span-2">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-8 h-8 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-sm">BV</span>
+          </div>
+          <span class="font-bold text-xl text-white">BlogVlog</span>
+        </div>
+        <p class="text-gray-400 text-sm leading-relaxed max-w-xs">
+          A modern platform for writers and readers. Share ideas, explore stories, and build community.
+        </p>
+      </div>
+
+      <!-- Explore -->
+      <div>
+        <h3 class="text-sm font-semibold text-gray-200 uppercase tracking-wider mb-4">Explore</h3>
+        <ul class="space-y-2">
+          <li><%= link_to "Home", root_path, class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
+          <li><%= link_to "Categories", categories_path, class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
+          <li><%= link_to "Tags", tags_path, class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
+          <li><%= link_to "Archive", archive_path, class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
+        </ul>
+      </div>
+
+      <!-- Account -->
+      <div>
+        <h3 class="text-sm font-semibold text-gray-200 uppercase tracking-wider mb-4">Account</h3>
+        <ul class="space-y-2">
+          <% if user_signed_in? %>
+            <li><%= link_to "My Profile", user_path(current_user.username), class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
+            <% if current_user.role_admin? || current_user.role_author? %>
+              <li><%= link_to "Dashboard", admin_root_path, class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
+            <% end %>
+            <li><%= link_to "Settings", edit_user_registration_path, class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
+          <% else %>
+            <li><%= link_to "Sign In", new_user_session_path, class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
+            <li><%= link_to "Register", new_user_registration_path, class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
+          <% end %>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="border-t border-gray-800 mt-8 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-gray-500">© <%= Date.current.year %> BlogVlog. All rights reserved.</p>
+      <p class="text-sm text-gray-500">Built with ❤️ and Ruby on Rails</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <%= display_meta_tags default: "BlogVlog" %>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <%= stylesheet_link_tag :app %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="h-full bg-gray-950 text-gray-100 antialiased" data-controller="app">
+
+    <!-- Navigation -->
+    <%= render "shared/navbar" %>
+
+    <!-- Flash Messages -->
+    <div id="flash-messages" class="fixed top-20 right-4 z-50 space-y-2 max-w-sm w-full">
+      <% flash.each do |type, message| %>
+        <%= render "shared/flash", type: type, message: message %>
+      <% end %>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content" class="min-h-screen">
+      <%= yield %>
+    </main>
+
+    <!-- Footer -->
+    <%= render "shared/footer" %>
+
+  </body>
+</html>

@@ -1,0 +1,27 @@
+<% if collection.respond_to?(:total_pages) && collection.total_pages > 1 %>
+  <nav class="flex items-center justify-center gap-1" aria-label="Pagination">
+    <% if collection.first_page? %>
+      <span class="px-3 py-2 text-gray-600 cursor-not-allowed rounded-lg text-sm">←</span>
+    <% else %>
+      <%= link_to "←", url_for(page: collection.prev_page), class: "px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg text-sm transition-colors" %>
+    <% end %>
+
+    <% (1..collection.total_pages).each do |page| %>
+      <% if page == collection.current_page %>
+        <span class="px-3 py-2 bg-violet-600 text-white rounded-lg text-sm font-semibold"><%= page %></span>
+      <% elsif (page - collection.current_page).abs <= 2 %>
+        <%= link_to page, url_for(page: page), class: "px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg text-sm transition-colors" %>
+      <% elsif page == 1 || page == collection.total_pages %>
+        <%= link_to page, url_for(page: page), class: "px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg text-sm transition-colors" %>
+      <% elsif (page - collection.current_page).abs == 3 %>
+        <span class="px-2 py-2 text-gray-600 text-sm">…</span>
+      <% end %>
+    <% end %>
+
+    <% if collection.last_page? %>
+      <span class="px-3 py-2 text-gray-600 cursor-not-allowed rounded-lg text-sm">→</span>
+    <% else %>
+      <%= link_to "→", url_for(page: collection.next_page), class: "px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg text-sm transition-colors" %>
+    <% end %>
+  </nav>
+<% end %>

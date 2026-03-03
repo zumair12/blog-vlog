@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <%= display_meta_tags default: "Admin – BlogVlog" %>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <%= stylesheet_link_tag :app %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="h-full bg-gray-950 text-gray-100 antialiased flex" data-controller="admin">
+
+    <!-- Sidebar -->
+    <%= render "admin/shared/sidebar" %>
+
+    <!-- Main area -->
+    <div class="flex-1 flex flex-col min-h-screen overflow-x-hidden">
+
+      <!-- Top bar -->
+      <%= render "admin/shared/topbar" %>
+
+      <!-- Flash -->
+      <div class="px-6 pt-4 space-y-2">
+        <% flash.each do |type, message| %>
+          <%= render "shared/flash", type: type, message: message %>
+        <% end %>
+      </div>
+
+      <!-- Page content -->
+      <main class="flex-1 px-6 py-6">
+        <%= yield %>
+      </main>
+
+    </div>
+
+  </body>
+</html>
