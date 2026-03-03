@@ -1,0 +1,145 @@
+<% content_for :page_title, "Dashboard" %>
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <%= render "admin/shared/stat_card",
+      label: "Total Posts",
+      value: number_with_delimiter(@stats[:total_posts]),
+      sub: "#{@stats[:published_posts]} published",
+      icon: "📝",
+      color: "violet" %>
+
+  <%= render "admin/shared/stat_card",
+      label: "Total Views",
+      value: number_with_delimiter(@stats[:total_views]),
+      sub: "across all posts",
+      icon: "👁",
+      color: "indigo" %>
+
+  <%= render "admin/shared/stat_card",
+      label: "Comments",
+      value: number_with_delimiter(@stats[:total_comments]),
+      sub: "#{@stats[:pending_comments]} pending",
+      icon: "💬",
+      color: "rose" %>
+
+  <%= render "admin/shared/stat_card",
+      label: "Users",
+      value: number_with_delimiter(@stats[:total_users]),
+      sub: "#{@stats[:total_categories]} categories · #{@stats[:total_tags]} tags",
+      icon: "👥",
+      color: "emerald" %>
+</div>
+
+<!-- Two column layout -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+  <!-- Recent Posts -->
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-base font-semibold text-white">Recent Posts</h2>
+      <%= link_to "View All", admin_posts_path, class: "text-sm text-violet-400 hover:text-violet-300 transition-colors" %>
+    </div>
+    <div class="space-y-3">
+      <% @recent_posts.each do |post| %>
+        <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-800 transition-colors group">
+          <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-900/60 to-indigo-900/60 border border-gray-700 flex items-center justify-center text-lg shrink-0">
+            <%= post.category&.icon || "📝" %>
+          </div>
+          <div class="flex-1 min-w-0">
+            <%= link_to post.title, admin_post_path(post), class: "block text-sm font-medium text-gray-300 group-hover:text-white transition-colors truncate" %>
+            <p class="text-xs text-gray-500 mt-0.5"><%= post.user.username %> · <%= time_ago_in_words(post.created_at) %> ago</p>
+          </div>
+          <span class="text-xs px-2 py-0.5 rounded-full shrink-0 <%= post.status_published? ? 'bg-emerald-500/20 text-emerald-300' : post.status_draft? ? 'bg-amber-500/20 text-amber-300' : 'bg-gray-500/20 text-gray-400' %>">
+            <%= post.status.capitalize %>
+          </span>
+        </div>
+      <% end %>
+      <% if @recent_posts.empty? %>
+        <p class="text-center text-gray-500 py-4 text-sm">No posts yet</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Pending Comments -->
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-base font-semibold text-white">Pending Comments</h2>
+      <%= link_to "View All", admin_comments_path(status: "pending"), class: "text-sm text-violet-400 hover:text-violet-300 transition-colors" %>
+    </div>
+    <div class="space-y-3">
+      <% @pending_comments.each do |comment| %>
+        <div class="p-3 rounded-xl bg-gray-800/50 border border-gray-700/50">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-sm font-medium text-white">@<%= comment.user.username %></span>
+            <div class="flex items-center gap-2">
+              <%= button_to approve_admin_comment_path(comment), method: :patch,
+                  class: "text-xs px-2 py-0.5 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 rounded transition-colors" do %>Approve<% end %>
+              <%= button_to reject_admin_comment_path(comment), method: :patch,
+                  class: "text-xs px-2 py-0.5 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded transition-colors" do %>Reject<% end %>
+            </div>
+          </div>
+          <p class="text-xs text-gray-400 line-clamp-2"><%= comment.body %></p>
+          <p class="text-xs text-gray-600 mt-1">on: <%= comment.post.title.truncate(40) %></p>
+        </div>
+      <% end %>
+      <% if @pending_comments.empty? %>
+        <div class="text-center py-4">
+          <p class="text-sm text-emerald-400">✓ All caught up!</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+</div>
+
+<!-- Popular Posts + Recent Users -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+  <!-- Popular Posts -->
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <h2 class="text-base font-semibold text-white mb-4">Top Performing Posts</h2>
+    <div class="space-y-3">
+      <% @popular_posts.each_with_index do |post, i| %>
+        <div class="flex items-center gap-3">
+          <span class="text-2xl font-bold text-gray-700 w-6 text-center">#<%= i + 1 %></span>
+          <div class="flex-1 min-w-0">
+            <%= link_to post.title, post_path(post.slug), target: "_blank", class: "block text-sm font-medium text-gray-300 hover:text-white transition-colors truncate" %>
+            <p class="text-xs text-gray-500"><%= number_with_delimiter(post.views_count) %> views</p>
+          </div>
+        </div>
+      <% end %>
+      <% if @popular_posts.empty? %>
+        <p class="text-center text-gray-500 py-4 text-sm">No data yet</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <h2 class="text-base font-semibold text-white mb-4">Quick Actions</h2>
+    <div class="grid grid-cols-2 gap-3">
+      <%= link_to new_admin_post_path, class: "flex flex-col items-center gap-2 p-4 bg-violet-600/10 border border-violet-500/20 rounded-xl hover:bg-violet-600/20 transition-colors group" do %>
+        <span class="text-2xl">✏️</span>
+        <span class="text-sm font-medium text-violet-300 group-hover:text-violet-200">New Post</span>
+      <% end %>
+      <%= link_to admin_comments_path(status: "pending"), class: "flex flex-col items-center gap-2 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl hover:bg-amber-500/20 transition-colors group" do %>
+        <span class="text-2xl">💬</span>
+        <span class="text-sm font-medium text-amber-300 group-hover:text-amber-200">
+          Moderate (<%= @stats[:pending_comments] %>)
+        </span>
+      <% end %>
+      <% if current_user.role_admin? %>
+        <%= link_to new_admin_category_path, class: "flex flex-col items-center gap-2 p-4 bg-indigo-600/10 border border-indigo-500/20 rounded-xl hover:bg-indigo-600/20 transition-colors group" do %>
+          <span class="text-2xl">🏷</span>
+          <span class="text-sm font-medium text-indigo-300 group-hover:text-indigo-200">New Category</span>
+        <% end %>
+        <%= link_to admin_users_path, class: "flex flex-col items-center gap-2 p-4 bg-emerald-600/10 border border-emerald-500/20 rounded-xl hover:bg-emerald-600/20 transition-colors group" do %>
+          <span class="text-2xl">👥</span>
+          <span class="text-sm font-medium text-emerald-300 group-hover:text-emerald-200">Manage Users</span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+</div>
