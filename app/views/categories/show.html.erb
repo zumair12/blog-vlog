@@ -1,0 +1,31 @@
+<% content_for :title, @category.name %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <!-- Header -->
+  <div class="flex items-center gap-4 mb-8 pb-8 border-b border-gray-800">
+    <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl" style="background-color: <%= @category.color %>20;">
+      <%= @category.icon %>
+    </div>
+    <div>
+      <h1 class="text-2xl font-bold text-white" style="font-family: 'Playfair Display', serif;"><%= @category.name %></h1>
+      <% if @category.description.present? %>
+        <p class="text-gray-400 text-sm mt-0.5"><%= @category.description %></p>
+      <% end %>
+      <p class="text-sm mt-1" style="color: <%= @category.color %>;"><%= @category.posts_count %> posts</p>
+    </div>
+  </div>
+
+  <% if @posts.any? %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <% @posts.each do |post| %>
+        <%= render "posts/card", post: post %>
+      <% end %>
+    </div>
+    <%= render "shared/pagination", collection: @posts %>
+  <% else %>
+    <div class="text-center py-20 text-gray-500">
+      <p class="text-4xl mb-3"><%= @category.icon %></p>
+      <p>No posts in this category yet.</p>
+    </div>
+  <% end %>
+</div>

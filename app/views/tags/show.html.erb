@@ -1,0 +1,19 @@
+<% content_for :title, "##{@tag.name}" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <div class="flex items-center gap-3 mb-8 pb-8 border-b border-gray-800">
+    <span class="text-3xl font-bold px-4 py-2 rounded-xl" style="background-color: <%= @tag.color %>20; color: <%= @tag.color %>;">#<%= @tag.name %></span>
+    <p class="text-gray-400 text-sm"><%= @tag.posts_count %> posts</p>
+  </div>
+
+  <% if @posts.any? %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <% @posts.each do |post| %>
+        <%= render "posts/card", post: post %>
+      <% end %>
+    </div>
+    <%= render "shared/pagination", collection: @posts %>
+  <% else %>
+    <div class="text-center py-20 text-gray-500">No posts with this tag yet.</div>
+  <% end %>
+</div>
