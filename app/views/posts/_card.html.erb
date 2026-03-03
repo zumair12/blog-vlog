@@ -1,0 +1,78 @@
+<article class="group bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden hover:border-gray-700 hover:shadow-xl hover:shadow-black/30 transition-all duration-300 flex flex-col">
+  <!-- Featured image -->
+  <div class="relative aspect-video bg-gradient-to-br from-violet-900/40 to-indigo-900/40 overflow-hidden">
+    <% if post.featured_image.attached? %>
+      <%= image_tag post.featured_image, class: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" %>
+    <% else %>
+      <div class="w-full h-full flex items-center justify-center">
+        <% cat = post.category %>
+        <span class="text-5xl opacity-30"><%= cat&.icon || "📝" %></span>
+      </div>
+    <% end %>
+
+    <!-- Category badge -->
+    <% if post.category.present? %>
+      <div class="absolute top-3 left-3">
+        <%= link_to post.category, category_path(post.category.slug),
+            class: "inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg text-white shadow-lg",
+            style: "background-color: #{post.category.color}CC;" %>
+      </div>
+    <% end %>
+
+    <!-- Featured badge -->
+    <% if post.featured? && local_assigns[:featured] %>
+      <div class="absolute top-3 right-3">
+        <span class="inline-flex items-center gap-1 px-2 py-1 bg-amber-500/90 text-white text-xs font-semibold rounded-lg">
+          ★ Featured
+        </span>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Content -->
+  <div class="p-5 flex flex-col flex-1">
+    <!-- Tags -->
+    <% if post.tags.any? %>
+      <div class="flex flex-wrap gap-1.5 mb-3">
+        <% post.tags.first(3).each do |tag| %>
+          <%= link_to "##{tag.name}", tag_path(tag.slug),
+              class: "text-xs px-2 py-0.5 rounded-full font-medium hover:opacity-80 transition-opacity",
+              style: "background-color: #{tag.color}20; color: #{tag.color};" %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <!-- Title -->
+    <h3 class="font-bold text-white text-lg leading-snug mb-2 group-hover:text-violet-300 transition-colors line-clamp-2" style="font-family: 'Playfair Display', serif;">
+      <%= link_to post.title, post_path(post.slug) %>
+    </h3>
+
+    <!-- Excerpt -->
+    <% if post.excerpt.present? %>
+      <p class="text-gray-400 text-sm leading-relaxed mb-4 flex-1 line-clamp-2"><%= post.excerpt %></p>
+    <% end %>
+
+    <!-- Meta -->
+    <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-800">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white text-xs font-semibold shrink-0">
+          <%= post.user.initials %>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-gray-300"><%= post.user.username %></p>
+          <p class="text-xs text-gray-500"><%= post.published_at&.strftime("%b %d") %></p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 text-xs text-gray-500">
+        <span class="flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+          <%= number_with_delimiter(post.views_count) %>
+        </span>
+        <span class="flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <%= post.reading_time_text %>
+        </span>
+      </div>
+    </div>
+  </div>
+</article>

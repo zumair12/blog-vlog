@@ -1,0 +1,89 @@
+<% content_for :title, "Home – BlogVlog" %>
+
+<!-- Hero Section -->
+<section class="relative overflow-hidden border-b border-gray-800/50">
+  <!-- Background gradient -->
+  <div class="absolute inset-0 bg-gradient-to-br from-violet-900/20 via-gray-950 to-indigo-900/20 pointer-events-none"></div>
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.12),rgba(255,255,255,0))] pointer-events-none"></div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+    <div class="text-center max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 bg-violet-500/10 border border-violet-500/20 rounded-full text-violet-300 text-sm font-medium mb-6">
+        <span class="w-1.5 h-1.5 bg-violet-400 rounded-full animate-pulse"></span>
+        Ideas Worth Sharing
+      </div>
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6" style="font-family: 'Playfair Display', serif;">
+        Stories that
+        <span class="bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent"> inspire</span>
+      </h1>
+      <p class="text-lg text-gray-400 leading-relaxed mb-8">
+        Discover thoughtful articles, tutorials, and ideas from our community of writers. Explore topics that matter.
+      </p>
+      <!-- Search bar -->
+      <%= form_with url: search_path, method: :get, class: "max-w-md mx-auto" do |f| %>
+        <div class="flex gap-2">
+          <%= f.text_field :q, placeholder: "Search articles...",
+              class: "flex-1 bg-gray-900 border border-gray-700 text-white placeholder-gray-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors" %>
+          <%= f.submit "Search",
+              class: "px-5 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+    <!-- Main content (3 cols) -->
+    <div class="lg:col-span-3">
+
+      <!-- Featured Posts -->
+      <% if @featured_posts.any? && params[:page].nil? %>
+        <section class="mb-12">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+              <span class="text-amber-400">★</span> Featured
+            </h2>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <% @featured_posts.each do |post| %>
+              <%= render "posts/card", post: post, featured: true %>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+
+      <!-- Latest Posts -->
+      <section>
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-white">Latest Posts</h2>
+          <span class="text-sm text-gray-500"><%= @posts.total_count rescue @posts.count %> articles</span>
+        </div>
+
+        <% if @posts.any? %>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <% @posts.each do |post| %>
+              <%= render "posts/card", post: post %>
+            <% end %>
+          </div>
+
+          <!-- Pagination -->
+          <%= render "shared/pagination", collection: @posts %>
+        <% else %>
+          <div class="text-center py-16 text-gray-500">
+            <svg class="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <p>No posts yet. Check back soon!</p>
+          </div>
+        <% end %>
+      </section>
+
+    </div>
+
+    <!-- Sidebar (1 col) -->
+    <aside class="lg:col-span-1 space-y-6">
+      <%= render "shared/sidebar" %>
+    </aside>
+
+  </div>
+</div>

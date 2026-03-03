@@ -1,0 +1,188 @@
+<% content_for :title, @post.title %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+
+    <!-- Article (3 cols) -->
+    <article class="lg:col-span-3">
+
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+        <%= link_to "Home", root_path, class: "hover:text-gray-300 transition-colors" %>
+        <span>›</span>
+        <% if @post.category %>
+          <%= link_to @post.category.name, category_path(@post.category.slug), class: "hover:text-gray-300 transition-colors" %>
+          <span>›</span>
+        <% end %>
+        <span class="text-gray-400 truncate"><%= @post.title %></span>
+      </nav>
+
+      <!-- Category + Tags -->
+      <div class="flex flex-wrap items-center gap-2 mb-5">
+        <% if @post.category %>
+          <%= link_to @post.category, category_path(@post.category.slug),
+              class: "inline-flex items-center gap-1.5 px-3 py-1 text-sm font-semibold rounded-lg text-white",
+              style: "background-color: #{@post.category.color}CC;" %>
+        <% end %>
+        <% @post.tags.each do |tag| %>
+          <%= link_to "##{tag.name}", tag_path(tag.slug),
+              class: "text-sm px-2.5 py-1 rounded-full font-medium hover:opacity-80 transition-opacity",
+              style: "background-color: #{tag.color}20; color: #{tag.color};" %>
+        <% end %>
+      </div>
+
+      <!-- Title -->
+      <h1 class="text-3xl sm:text-4xl font-bold text-white leading-tight mb-6" style="font-family: 'Playfair Display', serif;">
+        <%= @post.title %>
+      </h1>
+
+      <!-- Author + Meta bar -->
+      <div class="flex items-center justify-between py-4 border-y border-gray-800 mb-8">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
+            <% if @post.user.avatar.attached? %>
+              <%= image_tag @post.user.avatar, class: "w-10 h-10 rounded-xl object-cover" %>
+            <% else %>
+              <%= @post.user.initials %>
+            <% end %>
+          </div>
+          <div>
+            <%= link_to "@#{@post.user.username}", user_path(@post.user.username), class: "text-sm font-semibold text-white hover:text-violet-300 transition-colors" %>
+            <p class="text-xs text-gray-500">
+              <%= @post.published_at ? @post.published_at.strftime("%B %d, %Y") : "Draft" %>
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 text-sm text-gray-400">
+          <span class="flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <%= @post.reading_time_text %>
+          </span>
+          <span class="flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            <%= number_with_delimiter(@post.views_count) %> views
+          </span>
+          <span class="flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+            <%= @post.comments_count %> comments
+          </span>
+        </div>
+      </div>
+
+      <!-- Featured Image -->
+      <% if @post.featured_image.attached? %>
+        <div class="mb-8 rounded-2xl overflow-hidden border border-gray-800">
+          <%= image_tag @post.featured_image, class: "w-full max-h-[500px] object-cover" %>
+        </div>
+      <% end %>
+
+      <!-- Rich Text Content -->
+      <div class="prose prose-lg prose-invert prose-violet max-w-none mb-10">
+        <%= @post.content %>
+      </div>
+
+      <!-- Tags footer -->
+      <div class="flex flex-wrap gap-2 pt-6 border-t border-gray-800 mb-8">
+        <span class="text-sm text-gray-400 font-medium">Tags:</span>
+        <% @post.tags.each do |tag| %>
+          <%= link_to "##{tag.name}", tag_path(tag.slug),
+              class: "text-sm px-3 py-1 rounded-full font-medium hover:opacity-80 transition-opacity",
+              style: "background-color: #{tag.color}20; color: #{tag.color};" %>
+        <% end %>
+      </div>
+
+      <!-- Next/Prev navigation -->
+      <div class="grid grid-cols-2 gap-4 mb-10">
+        <% if (prev_post = @post.previous_post) %>
+          <%= link_to post_path(prev_post.slug), class: "p-4 bg-gray-900 border border-gray-800 rounded-xl hover:border-gray-700 transition-colors group text-left" do %>
+            <p class="text-xs text-gray-500 mb-1.5">← Previous</p>
+            <p class="text-sm font-medium text-gray-300 group-hover:text-white transition-colors line-clamp-2"><%= prev_post.title %></p>
+          <% end %>
+        <% else %>
+          <div></div>
+        <% end %>
+        <% if (next_post = @post.next_post) %>
+          <%= link_to post_path(next_post.slug), class: "p-4 bg-gray-900 border border-gray-800 rounded-xl hover:border-gray-700 transition-colors group text-right" do %>
+            <p class="text-xs text-gray-500 mb-1.5">Next →</p>
+            <p class="text-sm font-medium text-gray-300 group-hover:text-white transition-colors line-clamp-2"><%= next_post.title %></p>
+          <% end %>
+        <% end %>
+      </div>
+
+      <!-- Comments Section -->
+      <section id="comments" class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+        <h2 class="text-xl font-bold text-white mb-6">
+          <%= @post.comments_count %> Comments
+        </h2>
+
+        <!-- Comment Form -->
+        <% if user_signed_in? %>
+          <div class="mb-8 pb-8 border-b border-gray-800">
+            <h3 class="text-sm font-semibold text-gray-300 mb-3">Leave a comment</h3>
+            <%= form_with model: [@post, @comment], class: "space-y-3" do |f| %>
+              <%= f.text_area :body,
+                  rows: 4,
+                  placeholder: "Share your thoughts...",
+                  class: "w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors resize-none" %>
+              <div class="flex justify-end">
+                <%= f.submit "Post Comment",
+                    class: "px-5 py-2.5 bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium rounded-lg transition-colors cursor-pointer" %>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="mb-8 pb-8 border-b border-gray-800 text-center py-4">
+            <p class="text-gray-400 text-sm">
+              <%= link_to "Sign in", new_user_session_path, class: "text-violet-400 hover:text-violet-300" %> to leave a comment
+            </p>
+          </div>
+        <% end %>
+
+        <!-- Comments List -->
+        <div class="space-y-6">
+          <% @comments.each do |comment| %>
+            <%= render "comments/comment", comment: comment %>
+          <% end %>
+          <% if @comments.empty? %>
+            <p class="text-center text-gray-500 py-8">No comments yet. Be the first!</p>
+          <% end %>
+        </div>
+      </section>
+
+    </article>
+
+    <!-- Sidebar -->
+    <aside class="hidden lg:block lg:col-span-1">
+      <!-- Author Card -->
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 mb-6">
+        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">About the Author</h3>
+        <div class="text-center">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xl mx-auto mb-3">
+            <%= @post.user.initials %>
+          </div>
+          <%= link_to "@#{@post.user.username}", user_path(@post.user.username), class: "block font-semibold text-white hover:text-violet-300 transition-colors mb-1" %>
+          <% if @post.user.bio.present? %>
+            <p class="text-xs text-gray-400 mb-3 line-clamp-3"><%= @post.user.bio %></p>
+          <% end %>
+          <%= link_to "View Profile", user_path(@post.user.username), class: "inline-block px-4 py-2 bg-violet-600/20 border border-violet-500/30 text-violet-300 text-sm font-medium rounded-lg hover:bg-violet-600/30 transition-colors" %>
+        </div>
+      </div>
+
+      <!-- Related Posts -->
+      <% if @related_posts.any? %>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5">
+          <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Related Posts</h3>
+          <div class="space-y-4">
+            <% @related_posts.each do |related| %>
+              <div class="group">
+                <%= link_to related.title, post_path(related.slug), class: "text-sm font-medium text-gray-300 group-hover:text-white transition-colors line-clamp-2 block mb-1" %>
+                <p class="text-xs text-gray-500"><%= related.reading_time_text %> · <%= related.published_at&.strftime("%b %d") %></p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </aside>
+
+  </div>
+</div>
