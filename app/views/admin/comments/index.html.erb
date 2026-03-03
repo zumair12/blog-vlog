@@ -1,0 +1,90 @@
+<% content_for :page_title, "Comments" %>
+
+<!-- Filter tabs -->
+<div class="flex items-center gap-2 mb-6 flex-wrap">
+  <% [["All", ""], ["Pending", "pending"], ["Approved", "approved"], ["Rejected", "rejected"], ["Spam", "spam"]].each do |label, val| %>
+    <%= link_to label, admin_comments_path(status: val.presence),
+        class: "px-3 py-1.5 rounded-lg text-sm transition-colors
+          #{params[:status].to_s == val ? 'bg-violet-600 text-white font-medium' : 'bg-gray-900 border border-gray-700 text-gray-400 hover:text-white hover:border-gray-600'}" %>
+  <% end %>
+</div>
+
+<div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+  <table class="w-full">
+    <thead>
+      <tr class="border-b border-gray-800 text-left">
+        <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Comment</th>
+        <th class="hidden md:table-cell px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Post</th>
+        <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+        <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-800">
+      <% @comments.each do |comment| %>
+        <tr id="comment-row-<%= comment.id %>" class="hover:bg-gray-800/30 transition-colors group">
+          <td class="px-4 py-3">
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                <%= comment.user.initials %>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-300">@<%= comment.user.username %></p>
+                <p class="text-sm text-gray-400 line-clamp-2 mt-0.5"><%= comment.body %></p>
+                <p class="text-xs text-gray-600 mt-1"><%= time_ago_in_words(comment.created_at) %> ago</p>
+              </div>
+            </div>
+          </td>
+          <td class="hidden md:table-cell px-4 py-3">
+            <%= link_to comment.post.title.truncate(40), post_path(comment.post.slug), target: "_blank",
+                class: "text-sm text-gray-400 hover:text-violet-300 transition-colors line-clamp-1 block" %>
+          </td>
+          <td class="px-4 py-3">
+            <span class="text-xs px-2.5 py-1 rounded-full font-medium
+              <%= comment.status_approved? ? 'bg-emerald-500/20 text-emerald-300' :
+                  comment.status_pending? ? 'bg-amber-500/20 text-amber-300' :
+                  comment.status_spam? ? 'bg-red-500/20 text-red-400' :
+                  'bg-gray-500/20 text-gray-400' %>">
+              <%= comment.status.capitalize %>
+            </span>
+          </td>
+          <td class="px-4 py-3 text-right">
+            <div class="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+              <% unless comment.status_approved? %>
+                <%= button_to approve_admin_comment_path(comment), method: :patch,
+                    class: "p-1.5 text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors text-xs font-medium",
+                    title: "Approve" do %>✓<% end %>
+              <% end %>
+              <% unless comment.status_rejected? %>
+                <%= button_to reject_admin_comment_path(comment), method: :patch,
+                    class: "p-1.5 text-gray-400 hover:text-amber-300 hover:bg-amber-500/10 rounded-lg transition-colors text-xs font-medium",
+                    title: "Reject" do %>✕<% end %>
+              <% end %>
+              <% unless comment.status_spam? %>
+                <%= button_to mark_spam_admin_comment_path(comment), method: :patch,
+                    class: "p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors text-xs font-medium",
+                    title: "Spam" do %>🚫<% end %>
+              <% end %>
+              <%= button_to admin_comment_path(comment), method: :delete,
+                  class: "p-1.5 text-gray-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors",
+                  title: "Delete",
+                  data: { turbo_confirm: "Delete this comment?" } do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+      <% if @comments.empty? %>
+        <tr>
+          <td colspan="4" class="px-4 py-12 text-center">
+            <p class="text-gray-500">No comments found</p>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-6">
+  <%= render "shared/pagination", collection: @comments %>
+</div>

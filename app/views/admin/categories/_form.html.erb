@@ -1,0 +1,43 @@
+<%= form_with model: [:admin, category], class: "max-w-xl space-y-5" do |f| %>
+  <%= render "shared/form_errors", record: category %>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-300 mb-2">Name *</label>
+    <%= f.text_field :name, placeholder: "e.g. Technology",
+        class: "w-full bg-gray-900 border border-gray-700 text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors" %>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+    <%= f.text_area :description, rows: 3, placeholder: "Brief description of this category...",
+        class: "w-full bg-gray-900 border border-gray-700 text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors resize-none" %>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-300 mb-2">Icon (Emoji) *</label>
+      <%= f.text_field :icon, placeholder: "📝",
+          class: "w-full bg-gray-900 border border-gray-700 text-white placeholder-gray-500 rounded-xl px-4 py-3 text-2xl focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors" %>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-300 mb-2">Colour *</label>
+      <div class="flex items-center gap-2">
+        <%= f.color_field :color, class: "w-10 h-10 rounded-lg bg-transparent border border-gray-700 cursor-pointer p-0.5" %>
+        <%= f.text_field :color, placeholder: "#6366f1",
+            class: "flex-1 bg-gray-900 border border-gray-700 text-white placeholder-gray-500 rounded-xl px-3 py-3 font-mono text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors" %>
+      </div>
+      <!-- Presets -->
+      <div class="flex flex-wrap gap-1.5 mt-2">
+        <% Category::COLORS.each do |c| %>
+          <button type="button" class="w-5 h-5 rounded-full border-2 border-transparent hover:border-white transition-colors" style="background-color: <%= c %>;" onclick="document.querySelector('[name=\'category[color]\']').value='<%= c %>'"></button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex gap-3 pt-2">
+    <%= f.submit category.new_record? ? "Create Category" : "Update Category",
+        class: "px-6 py-2.5 bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium rounded-xl transition-colors cursor-pointer" %>
+    <%= link_to "Cancel", admin_categories_path, class: "px-6 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-medium rounded-xl transition-colors" %>
+  </div>
+<% end %>

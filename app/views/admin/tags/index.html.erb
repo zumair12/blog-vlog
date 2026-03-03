@@ -1,0 +1,27 @@
+<% content_for :page_title, "Tags" %>
+
+<div class="flex items-center justify-between mb-6">
+  <p class="text-sm text-gray-500"><%= @tags.count %> tags</p>
+  <%= link_to "+ New Tag", new_admin_tag_path, class: "px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium rounded-lg transition-colors" %>
+</div>
+
+<div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+  <div class="flex flex-wrap gap-3">
+    <% @tags.each do |tag| %>
+      <div class="group flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all hover:pr-2"
+           style="background-color: <%= tag.color %>15; border-color: <%= tag.color %>40; color: <%= tag.color %>;">
+        <span class="text-sm font-medium">#<%= tag.name %></span>
+        <span class="text-xs opacity-60"><%= tag.posts_count %></span>
+        <div class="hidden group-hover:flex items-center gap-1 ml-1 border-l border-current pl-2">
+          <%= link_to "✎", edit_admin_tag_path(tag), class: "hover:opacity-100 opacity-70 text-xs" %>
+          <%= button_to "×", admin_tag_path(tag), method: :delete,
+              class: "hover:opacity-100 opacity-70 text-sm font-bold",
+              data: { turbo_confirm: "Delete tag ##{tag.name}?" } %>
+        </div>
+      </div>
+    <% end %>
+    <% if @tags.empty? %>
+      <p class="text-gray-500 text-sm">No tags created yet.</p>
+    <% end %>
+  </div>
+</div>

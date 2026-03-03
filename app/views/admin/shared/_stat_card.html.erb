@@ -1,0 +1,11 @@
+<% colors = { "violet" => "from-violet-500/20 to-violet-600/10 border-violet-500/20 text-violet-400", "indigo" => "from-indigo-500/20 to-indigo-600/10 border-indigo-500/20 text-indigo-400", "rose" => "from-rose-500/20 to-rose-600/10 border-rose-500/20 text-rose-400", "emerald" => "from-emerald-500/20 to-emerald-600/10 border-emerald-500/20 text-emerald-400" } %>
+<% c = colors[color] || colors["violet"] %>
+
+<div class="bg-gradient-to-br <%= c.split(" ").first(2).join(" ") %> border <%= c.split(" ")[2] %> rounded-2xl p-5">
+  <div class="flex items-start justify-between mb-3">
+    <span class="text-3xl"><%= icon %></span>
+    <span class="text-xs text-gray-500 font-medium uppercase tracking-wider"><%= label %></span>
+  </div>
+  <div class="text-2xl font-bold text-white mb-1"><%= value %></div>
+  <div class="text-xs <%= c.split(" ").last %>"><%= sub %></div>
+</div>
