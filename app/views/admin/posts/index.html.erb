@@ -1,0 +1,106 @@
+<% content_for :page_title, "Posts" %>
+
+<!-- Filters -->
+<div class="flex flex-col sm:flex-row gap-3 mb-6">
+  <%= form_with url: admin_posts_path, method: :get, class: "flex-1 flex gap-2" do |f| %>
+    <%= f.text_field :q, value: params[:q], placeholder: "Search posts...",
+        class: "flex-1 bg-gray-900 border border-gray-700 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500 transition-colors" %>
+    <%= f.hidden_field :status, value: params[:status] %>
+    <%= f.submit "Search", class: "px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors cursor-pointer" %>
+  <% end %>
+
+  <div class="flex gap-2">
+    <% [["All", ""], ["Published", "published"], ["Drafts", "draft"], ["Archived", "archived"]].each do |label, val| %>
+      <%= link_to label, admin_posts_path(status: val.presence, q: params[:q]),
+          class: "px-3 py-2 rounded-lg text-sm transition-colors #{params[:status].to_s == val ? 'bg-violet-600 text-white' : 'bg-gray-900 border border-gray-700 text-gray-400 hover:text-white hover:border-gray-600'}" %>
+    <% end %>
+
+    <%= link_to "+ New Post", new_admin_post_path, class: "px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium rounded-lg transition-colors ml-2" %>
+  </div>
+</div>
+
+<!-- Posts Table -->
+<div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+  <table class="w-full">
+    <thead>
+      <tr class="border-b border-gray-800 text-left">
+        <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Post</th>
+        <th class="hidden md:table-cell px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Author</th>
+        <th class="hidden lg:table-cell px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
+        <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+        <th class="hidden md:table-cell px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Views</th>
+        <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-800">
+      <% @posts.each do |post| %>
+        <tr class="hover:bg-gray-800/30 transition-colors group">
+          <td class="px-4 py-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 border border-gray-700 overflow-hidden shrink-0">
+                <% if post.featured_image.attached? %>
+                  <%= image_tag post.featured_image, class: "w-full h-full object-cover" %>
+                <% else %>
+                  <div class="w-full h-full flex items-center justify-center text-xl"><%= post.category&.icon || "📝" %></div>
+                <% end %>
+              </div>
+              <div>
+                <%= link_to post.title, admin_post_path(post), class: "text-sm font-medium text-white hover:text-violet-300 transition-colors line-clamp-1" %>
+                <p class="text-xs text-gray-500 mt-0.5"><%= post.reading_time_text %> · <%= post.comments_count %> comments</p>
+              </div>
+            </div>
+          </td>
+          <td class="hidden md:table-cell px-4 py-3 text-sm text-gray-400">@<%= post.user.username %></td>
+          <td class="hidden lg:table-cell px-4 py-3">
+            <% if post.category %>
+              <span class="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-lg text-white" style="background-color: <%= post.category.color %>CC;">
+                <%= post.category.icon %> <%= post.category.name %>
+              </span>
+            <% else %>
+              <span class="text-gray-600 text-xs">—</span>
+            <% end %>
+          </td>
+          <td class="px-4 py-3">
+            <span class="text-xs px-2.5 py-1 rounded-full font-medium
+              <%= post.status_published? ? 'bg-emerald-500/20 text-emerald-300' :
+                  post.status_draft? ? 'bg-amber-500/20 text-amber-300' :
+                  'bg-gray-500/20 text-gray-400' %>">
+              <%= post.status.capitalize %>
+            </span>
+          </td>
+          <td class="hidden md:table-cell px-4 py-3 text-sm text-gray-400 text-right">
+            <%= number_with_delimiter(post.views_count) %>
+          </td>
+          <td class="px-4 py-3 text-right">
+            <div class="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+              <% unless post.status_published? %>
+                <%= button_to publish_admin_post_path(post), method: :patch, class: "p-1.5 text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors", title: "Publish" do %>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <% end %>
+              <% end %>
+              <%= link_to edit_admin_post_path(post), class: "p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors", title: "Edit" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              <% end %>
+              <%= button_to admin_post_path(post), method: :delete, class: "p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors", title: "Delete", data: { turbo_confirm: "Delete '#{post.title}'?" } do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+      <% if @posts.empty? %>
+        <tr>
+          <td colspan="6" class="px-4 py-12 text-center text-gray-500">
+            <p class="text-lg mb-2">No posts yet</p>
+            <%= link_to "+ Create your first post", new_admin_post_path, class: "text-violet-400 hover:text-violet-300 text-sm" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination -->
+<div class="mt-6">
+  <%= render "shared/pagination", collection: @posts %>
+</div>

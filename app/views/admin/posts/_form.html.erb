@@ -1,0 +1,96 @@
+<!-- Shared form partial for new/edit post -->
+<%= form_with model: [:admin, post], class: "space-y-6", data: { controller: "post-form" } do |f| %>
+  <%= render "shared/form_errors", record: post %>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Main content (2 cols) -->
+    <div class="lg:col-span-2 space-y-5">
+
+      <!-- Title -->
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Title *</label>
+        <%= f.text_field :title,
+            placeholder: "Enter post title...",
+            class: "w-full bg-gray-900 border border-gray-700 text-white placeholder-gray-500 rounded-xl px-4 py-3 text-lg font-semibold focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors",
+            required: true %>
+      </div>
+
+      <!-- Excerpt -->
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Excerpt <span class="text-gray-500 font-normal">(leave blank to auto-generate)</span></label>
+        <%= f.text_area :excerpt,
+            rows: 3,
+            placeholder: "Short description of the post...",
+            class: "w-full bg-gray-900 border border-gray-700 text-white placeholder-gray-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors resize-none" %>
+      </div>
+
+      <!-- Rich Text Content -->
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Content *</label>
+        <div class="rounded-xl border border-gray-700 overflow-hidden action-text-editor-container">
+          <%= f.rich_text_area :content,
+              class: "action-text-editor" %>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Sidebar settings (1 col) -->
+    <div class="space-y-4">
+
+      <!-- Publish -->
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+        <h3 class="text-sm font-semibold text-gray-300 mb-3">Publish</h3>
+        <div class="mb-4">
+          <label class="block text-xs text-gray-500 mb-1">Status</label>
+          <%= f.select :status, Post.statuses.keys.map { |s| [s.capitalize, s] },
+              {},
+              class: "w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500 transition-colors" %>
+        </div>
+        <div class="flex items-center gap-2 mb-4">
+          <%= f.check_box :featured, class: "w-4 h-4 accent-violet-500 rounded" %>
+          <label class="text-sm text-gray-300">Feature this post</label>
+        </div>
+        <div class="flex gap-2">
+          <%= f.submit post.new_record? ? "Create Post" : "Update Post",
+              class: "flex-1 py-2.5 bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium rounded-lg transition-colors cursor-pointer text-center" %>
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+        <label class="block text-sm font-semibold text-gray-300 mb-2">Category</label>
+        <%= f.select :category_id,
+            options_for_select([["None", ""]] + @categories.map { |c| ["#{c.icon} #{c.name}", c.id] }, post.category_id),
+            {},
+            class: "w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500 transition-colors" %>
+      </div>
+
+      <!-- Tags -->
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+        <label class="block text-sm font-semibold text-gray-300 mb-2">Tags</label>
+        <p class="text-xs text-gray-500 mb-2">Comma-separated list of tag names</p>
+        <%= f.text_field :tag_list,
+            value: post.tag_list,
+            placeholder: "rails, ruby, web-dev",
+            class: "w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500 transition-colors" %>
+      </div>
+
+      <!-- Featured Image -->
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+        <label class="block text-sm font-semibold text-gray-300 mb-2">Featured Image</label>
+        <% if post.featured_image.attached? %>
+          <div class="mb-3 rounded-lg overflow-hidden border border-gray-700">
+            <%= image_tag post.featured_image, class: "w-full h-32 object-cover" %>
+          </div>
+        <% end %>
+        <%= f.file_field :featured_image,
+            accept: "image/*",
+            class: "w-full text-sm text-gray-400 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-violet-600/20 file:text-violet-300 hover:file:bg-violet-600/30 cursor-pointer" %>
+      </div>
+
+    </div>
+  </div>
+
+<% end %>

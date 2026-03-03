@@ -1,0 +1,3 @@
+<% content_for :page_title, "Edit Post" %>
+<% content_for :page_subtitle, @post.title.truncate(50) %>
+<%= render "form", post: @post %>
