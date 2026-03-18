@@ -21,7 +21,7 @@ gem "kaminari"
 gem "pagy", "~> 9.0"
 
 # Friendly URLs / slugs
-gem "friendly_id", "~> 5.5.0"
+gem "friendly_id", "~> 5.6.0"
 
 # Image processing for Active Storage
 gem "image_processing", "~> 1.2"
