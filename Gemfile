@@ -18,7 +18,7 @@ gem "pundit"
 
 # Pagination
 gem "kaminari"
-gem "pagy", "~> 9.0"
+gem "pagy", "~> 43.4"
 
 # Friendly URLs / slugs
 gem "friendly_id", "~> 5.5.0"
