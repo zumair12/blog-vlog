@@ -30,7 +30,7 @@ gem "image_processing", "~> 1.2"
 gem "meta-tags"
 
 # Password hashing
-gem "bcrypt", "~> 3.1.7"
+gem "bcrypt", "~> 3.1.22"
 
 # Windows timezone support
 gem "tzinfo-data", platforms: %i[ windows jruby ]
